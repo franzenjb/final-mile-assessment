@@ -39,12 +39,8 @@ export default function AdminPage() {
     if (!supabase || !user) return;
     setLoading(true);
     (async () => {
-      const { data: adminRow } = await supabase
-        .from("admin_emails")
-        .select("email")
-        .ilike("email", user.email ?? "")
-        .maybeSingle();
-      const admin = Boolean(adminRow);
+      const { data: adminFlag } = await supabase.rpc("is_admin");
+      const admin = Boolean(adminFlag);
       setIsAdmin(admin);
       if (admin) {
         const { data } = await supabase

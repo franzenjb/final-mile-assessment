@@ -73,11 +73,11 @@ export default function AssessmentForm() {
       return;
     }
     (async () => {
-      const [{ data: adminRow }, { data: editors }] = await Promise.all([
-        supabase.from("admin_emails").select("email").ilike("email", user.email ?? "").maybeSingle(),
+      const [{ data: adminFlag }, { data: editors }] = await Promise.all([
+        supabase.rpc("is_admin"),
         supabase.from("region_editors").select("region_id").ilike("email", user.email ?? ""),
       ]);
-      setIsAdmin(Boolean(adminRow));
+      setIsAdmin(Boolean(adminFlag));
       setEditorRegions((editors ?? []).map((r: { region_id: string }) => r.region_id));
     })();
   }, [supabase, user]);
