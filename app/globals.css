@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f7f8fa;
+  --ink: #0b1220;
+  --muted: #4b5563;
+  --line: #e5e7eb;
+  --accent: #1e5c8b;
+  --red: #ed1b2e;
+}
+
+html, body { background: var(--bg); color: var(--ink); }
+
+@media print {
+  .no-print { display: none !important; }
+  details { break-inside: avoid; }
+  details > summary { list-style: none; }
+  details[open] > summary::after { content: ""; }
+  details > div { display: block !important; }
+  body { background: white !important; font-size: 11pt; }
+  .print-open > div { display: block !important; }
+  .accordion-summary svg { display: none !important; }
+}
+
+/* Force-open accordions when printing */
+@media print {
+  details:not([open]) > div { display: block !important; }
+  details > summary { pointer-events: none; }
+}
