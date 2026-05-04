@@ -30,7 +30,6 @@ export default function AssessmentForm() {
   const supabase = useMemo(() => getSupabaseBrowser(), []);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [editorRegions, setEditorRegions] = useState<string[]>([]);
 
   const [regionId, setRegionId] = useState<string>("");
   const [values, setValues] = useState<FormValues>(() => emptyFormValues());
@@ -69,18 +68,15 @@ export default function AssessmentForm() {
   useEffect(() => {
     if (!supabase || !user) {
       setIsAdmin(false);
-      setEditorRegions([]);
       return;
     }
     (async () => {
-      const [{ data: adminFlag }, { data: editors }] = await Promise.all([
-        supabase.rpc("is_admin"),
-        supabase.from("region_editors").select("region_id").ilike("email", user.email ?? ""),
-      ]);
+      const { data: adminFlag } = await supabase.rpc("is_admin");
       setIsAdmin(Boolean(adminFlag));
-      setEditorRegions((editors ?? []).map((r: { region_id: string }) => r.region_id));
     })();
   }, [supabase, user]);
+
+  const isRedcrossUser = (user?.email ?? "").toLowerCase().endsWith("@redcross.org");
 
   // Load when region changes
   useEffect(() => {
@@ -150,7 +146,7 @@ export default function AssessmentForm() {
           storageKey(regionId),
           JSON.stringify({ regionId, values, savedAt, status })
         );
-        if (user && supabase && (isAdmin || editorRegions.includes(regionId))) {
+        if (user && supabase && (isAdmin || isRedcrossUser)) {
           const region = NORTHEAST_REGIONS.find((r) => r.id === regionId);
           const { error } = await supabase.from("regional_plans").upsert(
             {
@@ -175,7 +171,7 @@ export default function AssessmentForm() {
       }
     }, 700);
     return () => clearTimeout(t);
-  }, [values, regionId, user, supabase, status, isAdmin, editorRegions]);
+  }, [values, regionId, user, supabase, status, isAdmin, isRedcrossUser]);
 
   const onChange = useCallback((id: string, value: string | string[] | number) => {
     setValues((prev) => ({ ...prev, [id]: value }));
@@ -259,7 +255,7 @@ export default function AssessmentForm() {
     setStatus(snap.status);
   };
 
-  const canEdit = isAdmin || editorRegions.includes(regionId);
+  const canEdit = isAdmin || isRedcrossUser;
   const completedFields = useMemo(() => {
     let count = 0,
       total = 0;
@@ -419,8 +415,9 @@ export default function AssessmentForm() {
 
         {regionId && user && !canEdit && (
           <div className="mb-4 rounded-2xl border border-arc-red/30 bg-arc-red-soft px-5 py-4 text-sm text-arc-red">
-            You don't have edit access to <strong>{region?.name}</strong>. Ask the division admin to add{" "}
-            <code className="rounded bg-white px-1">{user.email}</code> as an editor.
+            Cloud editing requires a Red Cross email. You're signed in as{" "}
+            <code className="rounded bg-white px-1">{user.email}</code>. Sign out and use your{" "}
+            <strong>@redcross.org</strong> address to edit and sync this plan.
           </div>
         )}
 
