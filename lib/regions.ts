@@ -4,8 +4,9 @@ export const NORTHEAST_REGIONS = [
   { id: "greater-ny", name: "Greater New York Region" },
   { id: "greater-pa", name: "Greater Pennsylvania Region" },
   { id: "massachusetts", name: "Massachusetts Region" },
+  { id: "new-jersey", name: "New Jersey Region" },
   { id: "northern-new-england", name: "Northern New England Region" },
-  { id: "south-central-pa", name: "South Central Pennsylvania Region" },
+  { id: "south-eastern-pa", name: "South Eastern Pennsylvania Region" },
   { id: "western-ny", name: "Western New York Region" },
 ] as const;
 

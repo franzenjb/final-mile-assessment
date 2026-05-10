@@ -152,8 +152,9 @@ cross join (
     ('greater-ny'),
     ('greater-pa'),
     ('massachusetts'),
+    ('new-jersey'),
     ('northern-new-england'),
-    ('south-central-pa'),
+    ('south-eastern-pa'),
     ('western-ny')
 ) as r(region_id)
 on conflict (email, region_id) do nothing;
@@ -163,5 +164,5 @@ insert into public.admin_emails (email) values ('jeff.franzen2@redcross.org')
 on conflict (email) do nothing;
 insert into public.region_editors (email, region_id)
 select 'jeff.franzen2@redcross.org', r.region_id
-from (values ('ct-ri'),('eastern-ny'),('greater-ny'),('greater-pa'),('massachusetts'),('northern-new-england'),('south-central-pa'),('western-ny')) as r(region_id)
+from (values ('ct-ri'),('eastern-ny'),('greater-ny'),('greater-pa'),('massachusetts'),('new-jersey'),('northern-new-england'),('south-eastern-pa'),('western-ny')) as r(region_id)
 on conflict (email, region_id) do nothing;
